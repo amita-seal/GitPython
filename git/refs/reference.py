@@ -1,79 +1,57 @@
 from git.util import (
     LazyMixin,
-    IterableObj,
+    Iterable,
 )
-from .symbolic import SymbolicReference, T_References
-
-
-# typing ------------------------------------------------------------------
-
-from typing import Any, Callable, Iterator, Type, Union, TYPE_CHECKING  # NOQA
-from git.types import Commit_ish, PathLike, _T  # NOQA
-
-if TYPE_CHECKING:
-    from git.repo import Repo
-
-# ------------------------------------------------------------------------------
+from .symbolic import SymbolicReference
 
 
 __all__ = ["Reference"]
 
-# { Utilities
+#{ Utilities
 
 
-def require_remote_ref_path(func: Callable[..., _T]) -> Callable[..., _T]:
+def require_remote_ref_path(func):
     """A decorator raising a TypeError if we are not a valid remote, based on the path"""
 
-    def wrapper(self: T_References, *args: Any) -> _T:
+    def wrapper(self, *args):
         if not self.is_remote():
             raise ValueError("ref path does not point to a remote reference: %s" % self.path)
         return func(self, *args)
-
     # END wrapper
     wrapper.__name__ = func.__name__
     return wrapper
+#}END utilities
 
 
-# }END utilities
-
-
-class Reference(SymbolicReference, LazyMixin, IterableObj):
+class Reference(SymbolicReference, LazyMixin, Iterable):
 
     """Represents a named reference to any object. Subclasses may apply restrictions though,
     i.e. Heads can only point to commits."""
-
     __slots__ = ()
     _points_to_commits_only = False
     _resolve_ref_on_create = True
     _common_path_default = "refs"
 
-    def __init__(self, repo: "Repo", path: PathLike, check_path: bool = True) -> None:
+    def __init__(self, repo, path, check_path=True):
         """Initialize this instance
-
         :param repo: Our parent repository
+
         :param path:
             Path relative to the .git/ directory pointing to the ref in question, i.e.
             refs/heads/master
         :param check_path: if False, you can provide any path. Otherwise the path must start with the
             default path prefix of this type."""
-        if check_path and not str(path).startswith(self._common_path_default + "/"):
-            raise ValueError(f"Cannot instantiate {self.__class__.__name__!r} from path {path}")
-        self.path: str  # SymbolicReference converts to string atm
+        if check_path and not path.startswith(self._common_path_default + '/'):
+            raise ValueError("Cannot instantiate %r from path %s" % (self.__class__.__name__, path))
         super(Reference, self).__init__(repo, path)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    # { Interface
+    #{ Interface
 
-    # @ReservedAssignment
-    def set_object(
-        self,
-        object: Union[Commit_ish, "SymbolicReference", str],
-        logmsg: Union[str, None] = None,
-    ) -> "Reference":
+    def set_object(self, object, logmsg=None):  # @ReservedAssignment
         """Special version which checks if the head-log needs an update as well
-
         :return: self"""
         oldbinsha = None
         if logmsg is not None:
@@ -106,49 +84,43 @@ class Reference(SymbolicReference, LazyMixin, IterableObj):
     # NOTE: Don't have to overwrite properties as the will only work without a the log
 
     @property
-    def name(self) -> str:
+    def name(self):
         """:return: (shortest) Name of this reference - it may contain path components"""
         # first two path tokens are can be removed as they are
         # refs/heads or refs/tags or refs/remotes
-        tokens = self.path.split("/")
+        tokens = self.path.split('/')
         if len(tokens) < 3:
-            return self.path  # could be refs/HEAD
-        return "/".join(tokens[2:])
+            return self.path           # could be refs/HEAD
+        return '/'.join(tokens[2:])
 
     @classmethod
-    def iter_items(
-        cls: Type[T_References],
-        repo: "Repo",
-        common_path: Union[PathLike, None] = None,
-        *args: Any,
-        **kwargs: Any,
-    ) -> Iterator[T_References]:
+    def iter_items(cls, repo, common_path=None):
         """Equivalent to SymbolicReference.iter_items, but will return non-detached
         references as well."""
         return cls._iter_items(repo, common_path)
 
-    # }END interface
+    #}END interface
 
-    # { Remote Interface
+    #{ Remote Interface
 
-    @property  # type: ignore ## mypy cannot deal with properties with an extra decorator (2021-04-21)
+    @property
     @require_remote_ref_path
-    def remote_name(self) -> str:
+    def remote_name(self):
         """
         :return:
             Name of the remote we are a reference of, such as 'origin' for a reference
             named 'origin/master'"""
-        tokens = self.path.split("/")
+        tokens = self.path.split('/')
         # /refs/remotes/<remote name>/<branch_name>
         return tokens[2]
 
-    @property  # type: ignore ## mypy cannot deal with properties with an extra decorator (2021-04-21)
+    @property
     @require_remote_ref_path
-    def remote_head(self) -> str:
+    def remote_head(self):
         """:return: Name of the remote head itself, i.e. master.
         :note: The returned name is usually not qualified enough to uniquely identify
             a branch"""
-        tokens = self.path.split("/")
-        return "/".join(tokens[3:])
+        tokens = self.path.split('/')
+        return '/'.join(tokens[3:])
 
-    # } END remote interface
+    #} END remote interface

@@ -13,17 +13,19 @@ The object database implementation is optimized for handling large quantities of
 Requirements
 ============
 
-* `Python`_ >= 3.7
+* `Python`_ 2.7 or newer
 * `Git`_ 1.7.0 or newer
     It should also work with older versions, but it may be that some operations
     involving remotes will not work as expected.
 * `GitDB`_ - a pure python git database implementation
-* `typing_extensions`_ >= 3.7.3.4 (if python < 3.10)
+* `Python Nose`_ - used for running the tests
+* `Mock by Michael Foord`_ used for tests. Requires version 0.5
 
 .. _Python: https://www.python.org
 .. _Git: https://git-scm.com/
+.. _Python Nose: https://nose.readthedocs.io/en/latest/
+.. _Mock by Michael Foord: http://www.voidspace.org.uk/python/mock.html
 .. _GitDB: https://pypi.python.org/pypi/gitdb
-.. _typing_extensions: https://pypi.org/project/typing-extensions/
 
 Installing GitPython
 ====================
@@ -34,7 +36,7 @@ installed, just run the following from the command-line:
 
 .. sourcecode:: none
 
-    # pip install GitPython
+    # pip install gitpython
 
 This command will download the latest version of GitPython from the
 `Python Package Index <http://pypi.python.org/pypi/GitPython>`_ and install it
@@ -62,7 +64,7 @@ Leakage of System Resources
 ---------------------------
 
 GitPython is not suited for long-running processes (like daemons) as it tends to
-leak system resources. It was written in a time where destructors (as implemented
+leak system resources. It was written in a time where destructors (as implemented 
 in the `__del__` method) still ran deterministically.
 
 In case you still want to use it in such a context, you will want to search the
@@ -102,9 +104,9 @@ Initialize all submodules to obtain the required dependencies with::
     $ cd git-python
     $ git submodule update --init --recursive
 
-Finally verify the installation by running unit tests::
+Finally verify the installation by running the `nose powered <https://github.com/nose-devs/nose>`_ unit tests::
 
-    $ python -m unittest
+    $ nosetests
 
 Questions and Answers
 =====================

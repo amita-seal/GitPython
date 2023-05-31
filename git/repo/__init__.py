@@ -1,3 +1,4 @@
 """Initialize the Repo package"""
 # flake8: noqa
-from .base import Repo as Repo
+from __future__ import absolute_import
+from .base import *

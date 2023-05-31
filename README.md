@@ -1,48 +1,25 @@
-![Python package](https://github.com/gitpython-developers/GitPython/workflows/Python%20package/badge.svg)
-[![Documentation Status](https://readthedocs.org/projects/gitpython/badge/?version=stable)](https://readthedocs.org/projects/gitpython/?badge=stable)
-[![Packaging status](https://repology.org/badge/tiny-repos/python:gitpython.svg)](https://repology.org/metapackage/python:gitpython/versions)
-
-## [Gitoxide](https://github.com/Byron/gitoxide): A peek into the future…
-
-I started working on GitPython in 2009, back in the days when Python was 'my thing' and I had great plans with it.
-Of course, back in the days, I didn't really know what I was doing and this shows in many places. Somewhat similar to
-Python this happens to be 'good enough', but at the same time is deeply flawed and broken beyond repair.
-
-By now, GitPython is widely used and I am sure there is a good reason for that, it's something to be proud of and happy about.
-The community is maintaining the software and is keeping it relevant for which I am absolutely grateful. For the time to come I am happy to continue maintaining GitPython, remaining hopeful that one day it won't be needed anymore.
-
-More than 15 years after my first meeting with 'git' I am still in excited about it, and am happy to finally have the tools and
-probably the skills to scratch that itch of mine: implement `git` in a way that makes tool creation a piece of cake for most.
-
-If you like the idea and want to learn more, please head over to [gitoxide](https://github.com/Byron/gitoxide), an
-implementation of 'git' in [Rust](https://www.rust-lang.org).
-
 ## GitPython
 
 GitPython is a python library used to interact with git repositories, high-level like git-porcelain,
 or low-level like git-plumbing.
 
-It provides abstractions of git objects for easy access of repository data often backed by calling the `git`
-command-line program.
+It provides abstractions of git objects for easy access of repository data, and additionally
+allows you to access the git repository more directly using either a pure python implementation,
+or the faster, but more resource intensive *git command* implementation.
 
-### DEVELOPMENT STATUS
+The object database implementation is optimized for handling large quantities of objects and large datasets,
+which is achieved by using low-level structures and data streaming.
 
-This project is in **maintenance mode**, which means that
-
-- …there will be no feature development, unless these are contributed
-- …there will be no bug fixes, unless they are relevant to the safety of users, or contributed
-- …issues will be responded to with waiting times of up to a month
-
-The project is open to contributions of all kinds, as well as new maintainers.
 
 ### REQUIREMENTS
 
-GitPython needs the `git` executable to be installed on the system and available in your `PATH` for most operations.
+GitPython needs the `git` executable to be installed on the system and available
+in your `PATH` for most operations.
 If it is not in your `PATH`, you can help GitPython find it by setting
 the `GIT_PYTHON_GIT_EXECUTABLE=<path/to/git>` environment variable.
 
-- Git (1.7.x or newer)
-- Python >= 3.7
+* Git (1.7.x or newer)
+* Python 2.7 to 3.7.
 
 The list of dependencies are listed in `./requirements.txt` and `./test-requirements.txt`.
 The installer takes care of installing them for you.
@@ -87,33 +64,32 @@ separate process which can be dropped periodically.
 
 #### Windows support
 
-See [Issue #525](https://github.com/gitpython-developers/GitPython/issues/525).
+For *Windows*, we do regularly test it on [Appveyor CI](https://www.appveyor.com/)
+but not all test-cases pass - you may help improve them by exploring
+[Issue #525](https://github.com/gitpython-developers/GitPython/issues/525).
 
 ### RUNNING TESTS
 
-_Important_: Right after cloning this repository, please be sure to have executed
+*Important*: Right after cloning this repository, please be sure to have executed
 the `./init-tests-after-clone.sh` script in the repository root. Otherwise
 you will encounter test failures.
 
-On _Windows_, make sure you have `git-daemon` in your PATH. For MINGW-git, the `git-daemon.exe`
+On *Windows*, make sure you have `git-daemon` in your PATH.  For MINGW-git, the `git-daemon.exe`
 exists in `Git\mingw64\libexec\git-core\`; CYGWIN has no daemon, but should get along fine
 with MINGW's.
 
-Ensure testing libraries are installed.
-In the root directory, run: `pip install -r test-requirements.txt`
+The easiest way to run tests is by using [tox](https://pypi.python.org/pypi/tox)
+a wrapper around virtualenv. It will take care of setting up environments with the proper
+dependencies installed and execute test commands. To install it simply:
 
-To lint, run: `pre-commit run --all-files`
+    pip install tox
 
-To typecheck, run: `mypy -p git`
+Then run:
 
-To test, run: `pytest`
+    tox
 
-Configuration for flake8 is in the ./.flake8 file.
 
-Configurations for mypy, pytest and coverage.py are in ./pyproject.toml.
-
-The same linting and testing will also be performed against different supported python versions
-upon submitting a pull request (or on each push if you have a fork with a "main" branch and actions enabled).
+For more fine-grained control, you can use `nose`.
 
 ### Contributions
 
@@ -121,35 +97,29 @@ Please have a look at the [contributions file][contributing].
 
 ### INFRASTRUCTURE
 
-- [User Documentation](http://gitpython.readthedocs.org)
-- [Questions and Answers](http://stackexchange.com/filters/167317/gitpython)
-- Please post on stackoverflow and use the `gitpython` tag
-- [Issue Tracker](https://github.com/gitpython-developers/GitPython/issues)
-  - Post reproducible bugs and feature requests as a new issue.
+* [User Documentation](http://gitpython.readthedocs.org)
+* [Questions and Answers](http://stackexchange.com/filters/167317/gitpython)
+ * Please post on stackoverflow and use the `gitpython` tag
+* [Issue Tracker](https://github.com/gitpython-developers/GitPython/issues)
+  * Post reproducible bugs and feature requests as a new issue.
     Please be sure to provide the following information if posting bugs:
-    - GitPython version (e.g. `import git; git.__version__`)
-    - Python version (e.g. `python --version`)
-    - The encountered stack-trace, if applicable
-    - Enough information to allow reproducing the issue
+    * GitPython version (e.g. `import git; git.__version__`)
+    * Python version (e.g. `python --version`)
+    * The encountered stack-trace, if applicable
+    * Enough information to allow reproducing the issue
 
 ### How to make a new release
 
-- Update/verify the **version** in the `VERSION` file
-- Update/verify that the `doc/source/changes.rst` changelog file was updated
-- Commit everything
-- Run `git tag -s <version>` to tag the version in Git
-- Run `make release`
-- Close the milestone mentioned in the _changelog_ and create a new one. _Do not reuse milestones by renaming them_.
-- set the upcoming version in the `VERSION` file, usually be
+* Update/verify the version in the `VERSION` file
+* Update/verify that the changelog has been updated
+* Commit everything
+* Run `git tag -s <version>` to tag the version in Git
+* Run `make release`
+* Finally, set the upcoming version in the `VERSION` file, usually be
   incrementing the patch level, and possibly by appending `-dev`. Probably you
   want to `git push` once more.
 
-### How to verify a release (DEPRECATED)
-
-Note that what follows is deprecated and future releases won't be signed anymore.
-More details about how it came to that can be found [in this issue](https://github.com/gitpython-developers/gitdb/issues/77).
-
-----
+### How to verify a release
 
 Please only use releases from `pypi` as you can verify the respective source
 tarballs.
@@ -158,18 +128,18 @@ This script shows how to verify the tarball was indeed created by the authors of
 this project:
 
 ```
-curl https://files.pythonhosted.org/packages/09/bc/ae32e07e89cc25b9e5c793d19a1e5454d30a8e37d95040991160f942519e/GitPython-3.1.8-py3-none-any.whl > gitpython.whl
-curl https://files.pythonhosted.org/packages/09/bc/ae32e07e89cc25b9e5c793d19a1e5454d30a8e37d95040991160f942519e/GitPython-3.1.8-py3-none-any.whl.asc >  gitpython-signature.asc
+curl https://pypi.python.org/packages/5b/38/0433c06feebbfbb51d644129dbe334031c33d55af0524326266f847ae907/GitPython-2.1.8-py2.py3-none-any.whl#md5=6b73ae86ee2dbab6da8652b2d875013a  > gitpython.whl
+curl https://pypi.python.org/packages/5b/38/0433c06feebbfbb51d644129dbe334031c33d55af0524326266f847ae907/GitPython-2.1.8-py2.py3-none-any.whl.asc > gitpython-signature.asc
 gpg --verify gitpython-signature.asc gitpython.whl
 ```
 
 which outputs
 
 ```
-gpg: Signature made Fr  4 Sep 10:04:50 2020 CST
-gpg:                using RSA key 27C50E7F590947D7273A741E85194C08421980C9
-gpg: Good signature from "Sebastian Thiel (YubiKey USB-C) <byronimo@gmail.com>" [ultimate]
-gpg:                 aka "Sebastian Thiel (In Rust I trust) <sebastian.thiel@icloud.com>" [ultimate]
+gpg: Signature made Mon Dec 11 17:34:17 2017 CET
+gpg:                using RSA key C3BC52BD76E2C23BAC6EC06A665F99FA9D99966C
+gpg:                issuer "byronimo@gmail.com"
+gpg: Good signature from "Sebastian Thiel (I do trust in Rust!) <byronimo@gmail.com>" [ultimate]
 ```
 
 You can verify that the keyid indeed matches the release-signature key provided in this
@@ -189,7 +159,7 @@ If you would like to trust it permanently, you can import and sign it:
 
 ```
 gpg --import ./release-verification-key.asc
-gpg --edit-key 4C08421980C9
+gpg --edit-key 88710E60
 
 > sign
 > save
@@ -197,22 +167,39 @@ gpg --edit-key 4C08421980C9
 
 ### Projects using GitPython
 
-- [PyDriller](https://github.com/ishepard/pydriller)
-- [Kivy Designer](https://github.com/kivy/kivy-designer)
-- [Prowl](https://github.com/nettitude/Prowl)
-- [Python Taint](https://github.com/python-security/pyt)
-- [Buster](https://github.com/axitkhurana/buster)
-- [git-ftp](https://github.com/ezyang/git-ftp)
-- [Git-Pandas](https://github.com/wdm0006/git-pandas)
-- [PyGitUp](https://github.com/msiemens/PyGitUp)
-- [PyJFuzz](https://github.com/mseclab/PyJFuzz)
-- [Loki](https://github.com/Neo23x0/Loki)
-- [Omniwallet](https://github.com/OmniLayer/omniwallet)
-- [GitViper](https://github.com/BeayemX/GitViper)
-- [Git Gud](https://github.com/bthayer2365/git-gud)
+* [PyDriller](https://github.com/ishepard/pydriller)
+* [Kivy Designer](https://github.com/kivy/kivy-designer)
+* [Prowl](https://github.com/nettitude/Prowl)
+* [Python Taint](https://github.com/python-security/pyt)
+* [Buster](https://github.com/axitkhurana/buster)
+* [git-ftp](https://github.com/ezyang/git-ftp)
+* [Git-Pandas](https://github.com/wdm0006/git-pandas)
+* [PyGitUp](https://github.com/msiemens/PyGitUp)
+* [PyJFuzz](https://github.com/mseclab/PyJFuzz)
+* [Loki](https://github.com/Neo23x0/Loki)
+* [Omniwallet](https://github.com/OmniLayer/omniwallet)
+* [GitViper](https://github.com/BeayemX/GitViper)
 
 ### LICENSE
 
-New BSD License. See the LICENSE file.
+New BSD License.  See the LICENSE file.
+
+### DEVELOPMENT STATUS
+
+[![codecov](https://codecov.io/gh/gitpython-developers/GitPython/branch/master/graph/badge.svg)](https://codecov.io/gh/gitpython-developers/GitPython)
+[![Build Status](https://travis-ci.org/gitpython-developers/GitPython.svg)](https://travis-ci.org/gitpython-developers/GitPython)
+[![Build status](https://ci.appveyor.com/api/projects/status/0f3pi3c00hajlrsd/branch/master?svg=true&passingText=windows%20OK&failingText=windows%20failed)](https://ci.appveyor.com/project/Byron/gitpython/branch/master)
+[![Code Climate](https://codeclimate.com/github/gitpython-developers/GitPython/badges/gpa.svg)](https://codeclimate.com/github/gitpython-developers/GitPython)
+[![Documentation Status](https://readthedocs.org/projects/gitpython/badge/?version=stable)](https://readthedocs.org/projects/gitpython/?badge=stable)
+[![Stories in Ready](https://badge.waffle.io/gitpython-developers/GitPython.png?label=ready&title=Ready)](https://waffle.io/gitpython-developers/GitPython)
+[![Packaging status](https://repology.org/badge/tiny-repos/python:gitpython.svg)](https://repology.org/metapackage/python:gitpython/versions)
+[![Throughput Graph](https://graphs.waffle.io/gitpython-developers/GitPython/throughput.svg)](https://waffle.io/gitpython-developers/GitPython/metrics/throughput)
+
+
+Now that there seems to be a massive user base, this should be motivation enough to let git-python
+return to a proper state, which means
+
+* no open pull requests
+* no open issues describing bugs
 
 [contributing]: https://github.com/gitpython-developers/GitPython/blob/master/CONTRIBUTING.md

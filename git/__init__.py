@@ -4,71 +4,68 @@
 # This module is part of GitPython and is released under
 # the BSD License: http://www.opensource.org/licenses/bsd-license.php
 # flake8: noqa
-# @PydevCodeAnalysisIgnore
-from git.exc import *  # @NoMove @IgnorePep8
+#@PydevCodeAnalysisIgnore
 import inspect
 import os
 import sys
+
 import os.path as osp
 
-from typing import Optional
-from git.types import PathLike
 
-__version__ = "git"
+__version__ = 'git'
 
 
-# { Initialization
-def _init_externals() -> None:
+#{ Initialization
+def _init_externals():
     """Initialize external projects by putting them into the path"""
-    if __version__ == "git" and "PYOXIDIZER" not in os.environ:
-        sys.path.insert(1, osp.join(osp.dirname(__file__), "ext", "gitdb"))
+    if __version__ == 'git':
+        sys.path.insert(0, osp.join(osp.dirname(__file__), 'ext', 'gitdb'))
 
     try:
         import gitdb
-    except ImportError as e:
-        raise ImportError("'gitdb' could not be found in your PYTHONPATH") from e
+    except ImportError:
+        raise ImportError("'gitdb' could not be found in your PYTHONPATH")
     # END verify import
 
-
-# } END initialization
-
+#} END initialization
 
 #################
 _init_externals()
 #################
 
-# { Imports
+#{ Imports
 
+from git.exc import *                       # @NoMove @IgnorePep8
 try:
     from git.config import GitConfigParser  # @NoMove @IgnorePep8
-    from git.objects import *  # @NoMove @IgnorePep8
-    from git.refs import *  # @NoMove @IgnorePep8
-    from git.diff import *  # @NoMove @IgnorePep8
-    from git.db import *  # @NoMove @IgnorePep8
-    from git.cmd import Git  # @NoMove @IgnorePep8
-    from git.repo import Repo  # @NoMove @IgnorePep8
-    from git.remote import *  # @NoMove @IgnorePep8
-    from git.index import *  # @NoMove @IgnorePep8
-    from git.util import (  # @NoMove @IgnorePep8
+    from git.objects import *               # @NoMove @IgnorePep8
+    from git.refs import *                  # @NoMove @IgnorePep8
+    from git.diff import *                  # @NoMove @IgnorePep8
+    from git.db import *                    # @NoMove @IgnorePep8
+    from git.cmd import Git                 # @NoMove @IgnorePep8
+    from git.repo import Repo               # @NoMove @IgnorePep8
+    from git.remote import *                # @NoMove @IgnorePep8
+    from git.index import *                 # @NoMove @IgnorePep8
+    from git.util import (                  # @NoMove @IgnorePep8
         LockFile,
         BlockingLockFile,
         Stats,
         Actor,
         rmtree,
     )
-except GitError as _exc:
-    raise ImportError("%s: %s" % (_exc.__class__.__name__, _exc)) from _exc
+except GitError as exc:
+    raise ImportError('%s: %s' % (exc.__class__.__name__, exc))
 
-# } END imports
+#} END imports
 
-__all__ = [name for name, obj in locals().items() if not (name.startswith("_") or inspect.ismodule(obj))]
+__all__ = [name for name, obj in locals().items()
+           if not (name.startswith('_') or inspect.ismodule(obj))]
 
 
-# { Initialize git executable path
+#{ Initialize git executable path
 GIT_OK = None
 
-
-def refresh(path: Optional[PathLike] = None) -> None:
+def refresh(path=None):
     """Convenience method for setting the git executable path."""
     global GIT_OK
     GIT_OK = False
@@ -79,14 +76,11 @@ def refresh(path: Optional[PathLike] = None) -> None:
         return
 
     GIT_OK = True
-
-
-# } END initialize git executable path
-
+#} END initialize git executable path
 
 #################
 try:
     refresh()
-except Exception as _exc:
-    raise ImportError("Failed to initialize: {0}".format(_exc)) from _exc
+except Exception as exc:
+    raise ImportError('Failed to initialize: {0}'.format(exc))
 #################
